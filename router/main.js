@@ -4,7 +4,7 @@ const ScoreDataObject = require('../public/js/ScoreDataObject.js');
 module.exports = function (app, fs) {
 
     var ParsingUtils = require('../public/js/ParsingUtil');
-    var ParsingUtil = require('../public/js/ParsingUtil');
+    var FileIOUtils = require('../public/js/FileIOUtil');
     app.get('/', function (req, res) {
         //res.render('index.html');
         console.log(parsingTools.foo());
@@ -70,8 +70,12 @@ module.exports = function (app, fs) {
     app.get('/score', function (req, res) {
         //standardScoreList_param, patternAScoreList_param
         let timestamp = ParsingUtils.toLocaleString(new Date());
+        let timestamp_date = ParsingUtils.toLocaleString(new Date(),'dateonly');
         var matchDataList = ParsingUtils.compareScoreData(timestamp);
-
+        console.log('main!!!!!!!!!!!!!!!!!!!!!!!!!!');
+        console.log(matchDataList);
+        let directoryPath = FileIOUtils.CreateDirectory(timestamp_date, fs);
+        FileIOUtils.ExportDataFile(timestamp_date, matchDataList, directoryPath);
 
 
         res.render('Practice.html');

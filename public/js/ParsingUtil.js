@@ -7,8 +7,8 @@ var querySelectorAll = require('query-selector');
 const ScoreDataObject = require('./ScoreDataObject.js');
 
 
-const yahoo = "https://baseball.yahoo.co.jp/npb/schedule/?&date=20180411";
-//const yahoo = "https://baseball.yahoo.co.jp/npb/schedule/";
+//const yahoo = "https://baseball.yahoo.co.jp/npb/schedule/?&date=20180411";
+const yahoo = "https://baseball.yahoo.co.jp/npb/schedule/";
 
 // ------------------------------------------------------------
 // PatterA  top-score
@@ -48,12 +48,12 @@ module.exports = {
                             patternAScoreObj.compareFlag = false;
                             console.log(patternAScoreObj);
                             perMatchDataList.push(patternAScoreObj);
+                        }else {
+                            perMatchDataList.push(patternAScoreObj);
                         }
                     } else if (standardScoreObj.teamName_A == patternAScoreObj.teamName_B
                         && standardScoreObj.teamName_B == patternAScoreObj.teamName_A) {
-                        if (standardScoreObj.score_A != patternAScoreObj.score_B
-                            || standardScoreObj.score_B != patternAScoreObj.score_A) {
-                            //基準になるサイトとデータの表示順序が反対なので、合わせて設定。
+                          //基準になるサイトとデータの表示順序が反対なので、合わせて設定。
                             let teamName_A = patternAScoreObj.teamName_A;
                             let teamName_B = patternAScoreObj.teamName_B;
                             let score_A = patternAScoreObj.score_A;
@@ -64,8 +64,12 @@ module.exports = {
                             patternAScoreObj.teamName_B = teamName_A;
                             patternAScoreObj.score_B = score_A;
 
+                            if (standardScoreObj.score_A != patternAScoreObj.score_A
+                                || standardScoreObj.score_B != patternAScoreObj.score_B) {
                             patternAScoreObj.compareFlag = false;
                             console.log(patternAScoreObj);
+                            perMatchDataList.push(patternAScoreObj);
+                        }else {
                             perMatchDataList.push(patternAScoreObj);
                         }
                     }
@@ -84,13 +88,13 @@ module.exports = {
                 date.getFullYear(),
                 date.getMonth() + 1,
                 date.getDate()
-            ].join('/');
+            ].join('_');
         } else {
             return [
                 date.getFullYear(),
                 date.getMonth() + 1,
                 date.getDate()
-            ].join('/') + ' '
+            ].join('_') + ' '
                 + date.toLocaleTimeString();
         }
         
