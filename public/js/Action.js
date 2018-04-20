@@ -21,14 +21,60 @@ $(document).on('click', '#button01', function () {
 
     //urlを取得する。
     //this.urlString = $('#url').val();
-    this.urlString = yahoo;
-    console.log("URL = " + this.urlString);
+    var urlString = "/score";
 
-    //5秒毎にYahooからデータを呼び出す。
-    //setInterval(compareScoreData, 500000, this.urlString);
-    compareScoreData(downloadbtn);
+        var target_result = '';
+        $.ajax({
+            type: 'GET',
+            url: encodeURI(urlString),
+            dataType: 'html',
+            async: false,
+            success: function (data) {
+                console.log('ajax result' + data);
+                target_result = data;
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                console.log("ajax通信に失敗しました");
+                console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+                console.log("textStatus     : " + textStatus);
+                console.log("errorThrown    : " + errorThrown.message);
+            },
+            complete: function (data) {
+                // alert("finishi");
+            }
+        });
 });
+$(document).on('click', '#button02', function () {
+   
 
+    //クリックした後の処理
+    console.log("button clicked");
+
+    //urlを取得する。
+    //this.urlString = $('#url').val();
+    var urlString = "/test";
+
+        var target_result = '';
+        $.ajax({
+            type: 'GET',
+            url: encodeURI(urlString),
+            dataType: 'html',
+            async: false,
+            success: function (data) {
+                console.log('ajax result' + data);
+                target_result = data;
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                console.log("ajax通信に失敗しました");
+                console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+                console.log("textStatus     : " + textStatus);
+                console.log("errorThrown    : " + errorThrown.message);
+            },
+            complete: function (data) {
+                // alert("finishi");
+            }
+        });
+});
 
 $(document).ready(function () {
     var downloadbtn =  $("#btnExport");

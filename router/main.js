@@ -7,11 +7,8 @@ module.exports = function (app, fs) {
     var FileIOUtils = require('../public/js/FileIOUtil');
     app.get('/', function (req, res) {
         //res.render('index.html');
-        console.log(parsingTools.foo());
-        res.render('index', {
-            title: "MY HomePage",
-            length: 5
-        })
+        
+        res.render('Practice.html');
     });
 
     app.get('/list', function (req, res) {
@@ -79,6 +76,11 @@ module.exports = function (app, fs) {
 
 
         res.render('Practice.html');
+    });
+
+    app.get('/test', function (req, res) {
+        
+        let timestamp = ParsingUtils.seleniumTest();
     });
 
     app.post('/score', function (req, res) {

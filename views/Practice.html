@@ -3,49 +3,31 @@
 
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <!-- <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.7.7/xlsx.core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xls/0.7.4-a/xls.core.min.js"></script>
-    <!-- <script src="/js/jquery.battatech.excelexport.js"></script>
 
-    <script src="/js/test.js"></script> -->
+    <!-- コンポネントのイベントを管理する -->
+    <script src="/js/Action.js"></script>
 
-    <style type="text/css">
-        table {
-            margin: 0 auto;
-            text-align: center;
-            border-collapse: collapse;
-            border: 1px solid #d4d4d4;
-        }
+    <link rel = "stylesheet" type = "text/css" href="css/style.css">
 
-        /* tr:nth-child(even) {
-            background: #cf4343a4;
-        } */
-
-        th,
-        td {
-            padding: 10px 30px;
-        }
-
-        th {
-            border-bottom: 1px solid #d4d4d4;
-        }
-    </style>
     <!-- <script src="./test.js"  type="module"></script> -->
     <!-- <script type="module" src="./sup.js"></script> -->
 
 </head>
+
 <body>
-    <form action="http://localhost:3000/score" method = "post">
-    <h1>BaseballScoreComparator</h1>
-    <ul id="sample01"></ul>
-    <p>
-        <a href="#" id="button01">ボタン</a>
-    </p>
-    <input type="button" id="btn-add-row" value="add" />
-    <br />
-    <br />
-   
+    <form action="http://localhost:3000/score" method="post">
+        <h1>BaseballScoreComparator</h1>
+        <p>
+            <input type="button" id="button01" class="button" value="moniteringStart" />
+            <input type="button" id="button02" class="button" value="seleniumTest" />
+            <!-- <a href="#" id="button01">ボタン</a> -->
+        </p>
+        <!-- <input type="button" id="button01" value="add" /> -->
+        <br />
+        <br />
+        <!--
         <table id="exceltable">
         </table>
 
@@ -61,7 +43,7 @@
             <tbody></tbody>
         </table>
         <input type="submit" value="submitTableData">
-       
+        -->
     </form>
 </body>
 

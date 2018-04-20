@@ -22,7 +22,7 @@ module.exports = {
         var filePath = directoryPath + '/scoreData_' + timestamp + '.xlsx';
 
         fs.stat(filePath, function (err, data) {
-           
+
             if (err) {
                 console.log(filePath + 'File does not exist. Create new File');
                 var workbook = new Excel.Workbook();
@@ -49,14 +49,14 @@ module.exports = {
                             teamName_B: perMatchData.teamName_B,
                             score_B: perMatchData.score_B
                         });
-                              if (perMatchData.compareFlag == false) {
-                                    let row = worksheet.lastRow;
-                                    row.fill = {
-                                        type: 'pattern',
-                                        pattern:'solid',
-                                        fgColor:{argb:'12345678'}
-                                    };
-                                }
+                        if (perMatchData.compareFlag == false) {
+                            let row = worksheet.lastRow;
+                            row.fill = {
+                                type: 'pattern',
+                                pattern: 'solid',
+                                fgColor: { argb: '12345678' }
+                            };
+                        }
                     }
                 }
                 workbook.xlsx.writeFile(filePath);
@@ -65,42 +65,38 @@ module.exports = {
                 console.log(filePath + 'File exists. update File');
                 var workbook = new Excel.Workbook();
                 workbook.xlsx.readFile(filePath).then(function () {
-                        var worksheet = workbook.getWorksheet(1);
-                        console.log(worksheet.getRow(5).values);
-                        for (matchData of matchDataList) {
-                            for (perMatchData of matchData) {
-                                console.log(perMatchData);
-                                // Add a couple of Rows by key-value, after the last current row, using the column keys
-                              
-                                worksheet.addRow([
-                                    perMatchData.site,
-                                    perMatchData.recoredTime,
-                                    perMatchData.teamName_A,
-                                    perMatchData.score_A,
-                                    perMatchData.teamName_B,
-                                    perMatchData.score_B
-                                ]).commit();
-                                if (perMatchData.compareFlag == false) {
-                                    console.log('flagdata');
-                                    //columeCount 써서마지막 컬럼까지 범위지정가능
-                                    worksheet.lastRow.fill = {
-                                        type: 'pattern',
-                                        pattern:'solid',
-                                        fgColor:{argb:'12345678'}
-                                    };
-                                    worksheet.lastRow.commit();
-                                }
+                    var worksheet = workbook.getWorksheet(1);
+                    console.log(worksheet.getRow(5).values);
+                    for (matchData of matchDataList) {
+                        for (perMatchData of matchData) {
+                            console.log(perMatchData);
+                            // Add a couple of Rows by key-value, after the last current row, using the column keys
+
+                            worksheet.addRow([
+                                perMatchData.site,
+                                perMatchData.recoredTime,
+                                perMatchData.teamName_A,
+                                perMatchData.score_A,
+                                perMatchData.teamName_B,
+                                perMatchData.score_B
+                            ]).commit();
+                            if (perMatchData.compareFlag == false) {
+                                console.log('flagdata');
+                                //columeCount 써서마지막 컬럼까지 범위지정가능
+                                worksheet.lastRow.fill = {
+                                    type: 'pattern',
+                                    pattern: 'solid',
+                                    fgColor: { argb: '12345678' }
+                                };
+                                worksheet.lastRow.commit();
                             }
                         }
-                        console.log('file Modify lastline');
-                        return workbook.xlsx.writeFile(filePath);
-                    })
+                    }
+                    console.log('file Modify lastline');
+                    return workbook.xlsx.writeFile(filePath);
+                })
             }
-
         });
-
-
-
     }
 };
 

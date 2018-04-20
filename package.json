@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "body-parser": "~1.14.2",
+    "chromedriver": "^2.37.0",
     "dom-parser": "^0.1.5",
     "ejs": "~2.4.1",
     "exceljs": "^1.1.2",
@@ -11,7 +12,10 @@
     "jquery": "^3.3.1",
     "jsdom": "^11.7.0",
     "jsdom-no-contextify": "^3.1.0",
+    "phantom": "^4.0.12",
     "query-selector": "^1.0.9",
+    "selenium": "^2.20.0",
+    "selenium-webdriver": "^3.6.0",
     "xmldom": "^0.1.27",
     "xmlhttprequest": "^1.7.0"
   }
