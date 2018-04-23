@@ -24,49 +24,48 @@ module.exports = {
         const webdriver = require('selenium-webdriver');
         const chrome = require('selenium-webdriver/chrome');
         var path = require('chromedriver').path;
-        const { Builder, By, Key, until } = require('selenium-webdriver');
+        const { Builder, By, Key } = require('selenium-webdriver');
 
         var driver = chrome.Driver.createSession(new chrome.Options(), new
             chrome.ServiceBuilder(path).build());
-        // const driver =  new webdriver.Builder().
-        // withCapabilities(webdriver.Capabilities.chrome()).build();
-        // (async function example() {
-        //     let driver = await new Builder().forBrowser('chrome').build();
-        //     try {
-        //       await driver.get('http://www.google.com/ncr');
-        //       await driver.findElement(By.name('q')).sendKeys('webdriver', Key.RETURN);
-        //       await driver.wait(until.titleIs('webdriver - Google Search'), 1000);
-        //     } finally {
-        //       await driver.quit();
-        //     }
-        //   })();
-        var drivergetsite = driver.get('http://sports.sakigake.jp/smp/sports/pro_baseball/index.html');
-        //var drivergetsite = driver.get(sannichi);
-        // driver.wait(until.elementIsVisible(driver.findElement(By.css("h2[class*='top-score-title']"))), 5000);
-       
+
+        driver.get('http://sports.sakigake.jp/smp/sports/pro_baseball/index.html');
+
+        let until = webdriver.until;
+        let untilDomReady = new webdriver.Condition('to be ready', function (driver) {
+            return driver
+                .executeScript("return document.readyState;")
+                .then(function (state) {
+                    return state === 'complete';
+                });
+        });
+
+        driver.wait(untilDomReady, 5000);
 
         // console.log("resultval:"+resultval);
-        driver.getPageSource().then(function (pageSource) {
-            console.log(pageSource);
+        driver.getPageSource().then(function(source){
+            console.log(source);
         });
 
 
-        driver.executeScript("return document.getElementsByClassName('top-score-title')").then(function(reg){
-           console.log("executeScript");
-           console.log(reg);
+        var htmllist = driver.executeScript("return document.querySelectorAll('div.top-score section.score-detail-mini')").then(function (reg) {
+            console.log("executeScript");
+            console.log(reg);
+            [].forEach.call(reg, function (html) {
+                html.getAttribute("outerHTML").then(function(profile) {
+                    console.log("profilelog");
+                    console.log(profile);
+                });
+            });
+            var testparsing = ParsingStringToDomObject(reg);
+            console.log("testparsing" );
+            console.log(testparsing);
+            driver.quit();
+            return reg;
         });
-        // promise1.then(function (value) {
-        //     console.log(value);
-        //     // expected output: "Success!"
-        // });
-        // var testval = driver.findElement(By.name('q')).sendKeys('webdriver');
-        // driver.findElement(By.name('btnG')).click();
-        // driver.wait(until.titleIs('webdriver - Google Search'), 1000);
-        // driver.quit();
-        // var drivergetsite = driver.get('http://sports.sakigake.jp/smp/sports/pro_baseball/index.html');
-        //drivergetsite.wait();
-        //var resultval = driver.getPageSource();
-        //console.log(resultval);
+
+        driver.quit();
+        return;
 
     },
 
@@ -191,16 +190,16 @@ var getStandardScore = function (urlString, timestamp) {
 
     return scoreObjList;
 }
-var getPatternAScoreDataList = function (urlString, timestamp) {
-    let document_str = getTargetSiteDomStr(urlString);
-    let document_obj = ParsingStringToDomObject(document_str) || 'notexist';
+var getPatternAScoreDataList = function (document_obj, matches) {
+    // let document_str = getTargetSiteDomStr(urlString);
+    //let document_obj = ParsingStringToDomObject(document_str) || 'notexist';
 
     // パースに成功した
     console.log("getPatternAScoreList print document_obj" + document_obj);
     if (document_obj == null) {
         console.log('getPatternAScoreList  :  document_obj == null');
     }
-    var matches = querySelectorAll("div.top-score section.score-detail-mini", document_obj);
+    //var matches = querySelectorAll("div.top-score section.score-detail-mini", document_obj);
     console.log("getPatternAScoreList matches" + matches);
     var scoreObjList = [];
 

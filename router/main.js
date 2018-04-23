@@ -81,6 +81,7 @@ module.exports = function (app, fs) {
     app.get('/test', function (req, res) {
         
         let timestamp = ParsingUtils.seleniumTest();
+        res.send('networking success');
     });
 
     app.post('/score', function (req, res) {
