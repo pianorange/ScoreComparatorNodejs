@@ -1,10 +1,15 @@
-var querySelectorAll = require('query-selector');
 
+// ------------------------------------------------------------
+//HTMLParsingに関した処理を管理する
+// ------------------------------------------------------------
+var querySelectorAll = require('query-selector');
 const ScoreDataObject = require('./ScoreDataObject.js');
 
 
-
-const yahoo = "https://baseball.yahoo.co.jp/npb/schedule/?&date=20180411";
+// ------------------------------------------------------------
+// Standard Score。比較基準になるスコアはヤフーから提供されるデータにする。
+// ------------------------------------------------------------
+const yahoo = "https://baseball.yahoo.co.jp/npb/schedule/?&date=20180425";
 //const yahoo = "https://baseball.yahoo.co.jp/npb/schedule/";
 
 // ------------------------------------------------------------
@@ -20,53 +25,57 @@ const fukui_se = "http://sports.fukuishimbun.co.jp/list.html?k=%E3%83%97%E3%83%A
 
 module.exports = {
 
-    seleniumTest: function () {
+    seleniumTest: async  function (urlString) {
+
         const webdriver = require('selenium-webdriver');
         const chrome = require('selenium-webdriver/chrome');
         var path = require('chromedriver').path;
         const { Builder, By, Key } = require('selenium-webdriver');
 
-        var driver = chrome.Driver.createSession(new chrome.Options(), new
+        var driver =  chrome.Driver.createSession(new chrome.Options(), new
             chrome.ServiceBuilder(path).build());
 
-        driver.get('http://sports.sakigake.jp/smp/sports/pro_baseball/index.html');
+        // Do not implicitly wait for anything.
+        driver.manage().timeouts().implicitlyWait(0);
 
-        let until = webdriver.until;
-        let untilDomReady = new webdriver.Condition('to be ready', function (driver) {
-            return driver
-                .executeScript("return document.readyState;")
-                .then(function (state) {
-                    return state === 'complete';
-                });
-        });
+        // Set the script wait timeout to 10 seconds.
+        driver.manage().timeouts().setScriptTimeout(10 * 1000);
 
-        driver.wait(untilDomReady, 5000);
+        var strhtml;
+        //取得したいURLの設定
+         driver.get(yahoo).then(function () {
 
-        // console.log("resultval:"+resultval);
-        driver.getPageSource().then(function(source){
-            console.log(source);
-        });
+            let untilDomReady = new webdriver.Condition('to be ready', function (driver) {
+                return driver
+                    .executeScript("return document.readyState;")
+                    .then(function (state) {
+                        return state === 'complete';
+                    });
+            });
 
+            driver.wait(untilDomReady, 2000).then(function () {
+                //非同期処理
+                driver.getPageSource().then(function (source) {
+                    strhtml = source;
+                    console.log("sourceCode!!!!!"+source);
+                    if (source = ! null) {
 
-        var htmllist = driver.executeScript("return document.querySelectorAll('div.top-score section.score-detail-mini')").then(function (reg) {
-            console.log("executeScript");
-            console.log(reg);
-            [].forEach.call(reg, function (html) {
-                html.getAttribute("outerHTML").then(function(profile) {
-                    console.log("profilelog");
-                    console.log(profile);
+                        console.log("sourceCode"+source);
+
+                    } else {
+                        return "failed";
+                    }
                 });
             });
-            var testparsing = ParsingStringToDomObject(reg);
-            console.log("testparsing" );
-            console.log(testparsing);
-            driver.quit();
-            return reg;
         });
+        driver.sleep(3000);
+        let until = webdriver.until;
+
+        console.log("strhtml!!!!!!!!!!!!! typeof" + typeof strhtml);
+        console.log("strhtml!!!!!!!!!!!!!" + strhtml);
 
         driver.quit();
-        return;
-
+        return strhtml;
     },
 
     compareScoreData: function (timestamp) {
@@ -74,6 +83,7 @@ module.exports = {
         //各siteから取得したデータを入れるためのリスト
         var compareTargetScoreDataList = [];
         var standardScoreList = getStandardScore(yahoo, timestamp);
+        //testのために、sannichi一つだけを設定
         var patternAScoreList = getPatternAScoreDataList(sannichi, timestamp);
         compareTargetScoreDataList.push(patternAScoreList);
 
@@ -154,15 +164,7 @@ var getStandardScore = function (urlString, timestamp) {
     let document_str = getTargetSiteDomStr(urlString);
     let document_obj = ParsingStringToDomObject(document_str) || 'notexist';
 
-    // パースに成功した
-    console.log("getStandardScore: print document_obj" + document_obj + "resultType:" + typeof document_obj);
-    if (document_obj == null) {
-        console.log('getStandardScore :  document_obj == null');
-    }
-    //var matches = document_obj.getElementById("gm_sch").getElementsByTagName("table").getElementsByClassName("teams");
     var matches = document_obj.querySelectorAll("#gm_sch table.teams");
-    console.log("getStandardScore: matchestextContent" + document_obj.querySelectorAll("#gm_sch table.teams")[0].innerHTML);
-
     var scoreObjList = [];
 
     for (var i = 0; i < matches.length; i++) {
@@ -190,16 +192,11 @@ var getStandardScore = function (urlString, timestamp) {
 
     return scoreObjList;
 }
-var getPatternAScoreDataList = function (document_obj, matches) {
-    // let document_str = getTargetSiteDomStr(urlString);
-    //let document_obj = ParsingStringToDomObject(document_str) || 'notexist';
+var getPatternAScoreDataList = function (urlString, timestamp) {
+    let document_str = getTargetSiteDomStr(urlString);
+    let document_obj = ParsingStringToDomObject(document_str) || 'notexist';
 
-    // パースに成功した
-    console.log("getPatternAScoreList print document_obj" + document_obj);
-    if (document_obj == null) {
-        console.log('getPatternAScoreList  :  document_obj == null');
-    }
-    //var matches = querySelectorAll("div.top-score section.score-detail-mini", document_obj);
+    var matches = querySelectorAll("div.top-score section.score-detail-mini", document_obj);
     console.log("getPatternAScoreList matches" + matches);
     var scoreObjList = [];
 
@@ -207,6 +204,7 @@ var getPatternAScoreDataList = function (document_obj, matches) {
         //section.score-detail-mini p strong.team basball-(teamname)
         var nameA = matches[i].children[0].children[0].textContent;
         var nameB = matches[i].children[0].children[2].textContent;
+        //結果確認のために、Parsing対象サイトでスコア情報を表示していない時には77,99を入れるように設定
         var ScoreA = (matches[i].children[0].children[1].children[0] == null) ? '77' : matches[i].children[0].children[1].children[0].textContent;
         var ScoreB = (matches[i].children[0].children[1].children[1] == null) ? '99' : matches[i].children[0].children[1].children[1].textContent;
         //すべての項目取得後、ScoreDataObject単位で管理する。
@@ -217,6 +215,21 @@ var getPatternAScoreDataList = function (document_obj, matches) {
     return scoreObjList;
 }
 
+var ParsingStringToDomObject = function (data) {
+
+    var jsdom = require("jsdom");
+    const { JSDOM } = jsdom;
+    let text_html = data;
+    let dom = null;
+
+    // ------------------------------------------------------------
+    // html 文字列から Document オブジェクトを作成する
+    // ------------------------------------------------------------
+    dom = new JSDOM(text_html);
+    let document_obj = dom.window.document;
+
+    return document_obj;
+}
 
 
 var getTargetSiteDomStr = function (urlString) {
@@ -248,28 +261,9 @@ var getTargetSiteDomStr = function (urlString) {
             console.log("errorThrown    : " + errorThrown.message);
         },
         complete: function (data) {
-            // alert("finishi");
+            // alert("complete");
         }
     });
     console.log('gettargetsitedomobj' + target_result);
     return target_result;
 }
-
-var ParsingStringToDomObject = function (data) {
-
-    var jsdom = require("jsdom");
-    const { JSDOM } = jsdom;
-    let text_html = data;
-    let dom = null;
-
-    // ------------------------------------------------------------
-    // html 文字列から Document オブジェクトを作成する
-    // ------------------------------------------------------------
-    dom = new JSDOM(text_html);
-    let document_obj = dom.window.document;
-
-    return document_obj;
-}
-
-
-
